@@ -74,25 +74,6 @@
   grid-row: 5;
   margin-right: 33.333%;
 }
-.gallery-tiler-pitted .tile-7 {
-  grid-column: 1 / 4;
-  grid-row: 6 / 8;
-}
-.gallery-tiler-pitted .tile-8 {
-  grid-column: 4 / -1;
-  grid-row: 6;
-  margin-left: 33.333%;
-}
-.gallery-tiler-pitted .tile-9 {
-  grid-column: 1 / 4;
-  grid-row: 8;
-  margin-left: 33.333%;
-}
-.gallery-tiler-pitted .tile-10 {
-  grid-column: 4 / -1;
-  grid-row: 7 / 9;
-  margin-right: 33.333%;
-}
 
 /**
  * Mountain.
