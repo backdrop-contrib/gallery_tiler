@@ -99,6 +99,7 @@ function _gallery_tiler_type_options() {
   return array(
     'compact' => t('Compact'),
     'pitted' => t('Pitted'),
+    'mountain' => t('Mountain'),
   );
 }
 
