@@ -20,6 +20,8 @@ function gallery_tiler_field_formatter_info() {
         'breakpoint' => 960,
         'tile_height' => 220,
         'gutter' => 0,
+        'colorbox' => FALSE,
+        'colorbox_image_style' => NULL,
       ),
     ),
   );
@@ -50,8 +52,6 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     '#empty_option' => t('None (original image)'),
     '#options' => $image_styles,
   );
-  // @todo colorbox?
-
   $element['breakpoint'] = array(
     '#type' => 'number',
     '#title' => t('Breakpoint'),
@@ -76,6 +76,20 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     '#default_value' => $settings['gutter'],
     '#field_suffix' => 'px',
   );
+  $element['colorbox'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use colorbox'),
+    '#default_value' => module_exists('colorbox') ? $settings['colorbox'] : FALSE,
+    '#disabled' => !module_exists('colorbox'),
+  );
+  $element['colorbox_image_style'] = array(
+    '#type' => 'select',
+    '#title' => t('Colorbox image style'),
+    '#default_value' => module_exists('colorbox') ? $settings['colorbox_image_style'] : NULL,
+    '#empty_option' => t('None (original image)'),
+    '#options' => $image_styles,
+  );
+
   return $element;
 }
 
@@ -94,20 +108,45 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
   $element = array();
   if ($display['type'] == 'tiled_gallery') {
     // @todo consider css file per type?
-    $path = backdrop_get_path('module', 'gallery_tiler') . '/css';
+    $path = backdrop_get_path('module', 'gallery_tiler');
     $breakpoint = $display['settings']['breakpoint'];
     $element['#attached']['css'] = array(
-      $path . '/gallery-tiler.css',
-      $path . '/gallery-tiler-media.css' => array(
+      $path . '/css/gallery-tiler.css',
+      $path . '/css/gallery-tiler-media.css' => array(
         'media' => "(min-width: {$breakpoint}px)",
       ),
     );
+
+    $use_colorbox = FALSE;
+    $cbox_image_style = FALSE;
+    if (module_exists('colorbox') && $display['settings']['colorbox']) {
+      // @todo Settings... is there an easier way?
+      $element['#attached']['library'][] = array('colorbox', 'colorbox');
+      $element['#attached']['js'][] = $path . '/js/gallery-tiler.js';
+      $use_colorbox = TRUE;
+      if (isset($display['settings']['colorbox_image_style'])) {
+        $cbox_image_style = $display['settings']['colorbox_image_style'];
+      }
+    }
+
     foreach ($items as $delta => $item) {
-      // @todo colorbox?
+      if ($use_colorbox) {
+        if ($cbox_image_style) {
+          $file_url = image_style_url($cbox_image_style, $item['uri']);
+        }
+        else {
+          $file_url = file_create_url($item['uri']);
+        }
+        $uri = array(
+          'path' => $file_url,
+          'options' => array('attributes' => array('rel' => 'gallery')),
+        );
+      }
       $element[$delta] = array(
         '#theme' => 'image_formatter',
         '#item' => $item,
         '#image_style' => $display['settings']['image_style'],
+        '#path' => isset($uri) ? $uri : '',
       );
     }
   }

@@ -3,3 +3,4 @@ description = Field formatter for image fields
 tags[] = Fields
 backdrop = 1.x
 type = module
+dependencies[] = image
