@@ -97,8 +97,13 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
  * Implements hook_field_formatter_settings_summary().
  */
 function gallery_tiler_field_formatter_settings_summary($field, $instance, $view_mode) {
-  $summary = 'This should display the summary';
-  return $summary;
+  $settings = $instance['display'][$view_mode]['settings'];
+  $variables = array('type' => 'ul');
+  foreach ($settings as $key => $value) {
+    // @todo Human friendlier display.
+    $variables['items'][] = $key . ': ' . $value;
+  }
+  return theme('item_list', $variables);
 }
 
 /**
