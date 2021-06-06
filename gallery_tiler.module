@@ -36,11 +36,10 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
   $settings = $display['settings'];
   $element = array();
 
-  // @todo more options.
   $element['type'] = array(
     '#type' => 'select',
     '#title' => t('Gallery type'),
-    '#options' => array('compact' => 'Compact'),
+    '#options' => _gallery_tiler_type_options(),
     '#default_value' => $settings['type'],
     '#required' => TRUE,
   );
@@ -91,6 +90,16 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
   );
 
   return $element;
+}
+
+/**
+ * Helper function.
+ */
+function _gallery_tiler_type_options() {
+  return array(
+    'compact' => t('Compact'),
+    'pitted' => t('Pitted'),
+  );
 }
 
 /**
