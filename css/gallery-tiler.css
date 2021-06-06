@@ -19,4 +19,5 @@
   /* Use our CSS variable. */
   --fallback-height: calc(var(--height) * 1.5);
   grid-auto-rows: var(--fallback-height, 100px);
+  gap: var(--gap, 0);
 }
