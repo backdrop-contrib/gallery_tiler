@@ -1,0 +1,40 @@
+/**
+ * CSS for bigger screens, see breakpoint.
+ */
+
+/**
+ * Type "Compact".
+ */
+.gallery-tiler-compact .field-items {
+  grid-template-columns: repeat(5, 1fr);
+  /* Use our CSS variables */
+  grid-auto-rows: var(--height, 100px);
+  gap: var(--gap, 0);
+}
+.gallery-tiler-compact .tile-1 {
+  grid-column: 1 / 3;
+  grid-row: 1;
+}
+.gallery-tiler-compact .tile-3 {
+  grid-column: 4 / 6;
+  grid-row: 1 / 3;
+}
+.gallery-tiler-compact .tile-4 {
+  grid-column: 1 / 4;
+  grid-row: 2 / 4;
+}
+.gallery-tiler-compact .tile-5 {
+  grid-column: 4 / 6;
+  grid-row: 3;
+}
+.gallery-tiler-compact .tile-6 {
+  grid-column: 1 / 3;
+  grid-row: 4;
+}
+.gallery-tiler-compact .tile-8 {
+  grid-column: 4 / 6;
+  grid-row: 4 / 6;
+}
+.gallery-tiler-compact .tile-10 {
+  grid-column: 2 / 4;
+}
