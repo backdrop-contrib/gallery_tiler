@@ -156,7 +156,6 @@ function gallery_tiler_field_formatter_settings_summary($field, $instance, $view
 function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
   if ($display['type'] == 'tiled_gallery') {
-    // @todo consider css file per type?
     $path = backdrop_get_path('module', 'gallery_tiler');
     $breakpoint = $display['settings']['breakpoint'];
     $element['#attached']['css'] = array(
@@ -169,7 +168,6 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
     $use_colorbox = FALSE;
     $cbox_image_style = FALSE;
     if (module_exists('colorbox') && $display['settings']['colorbox']) {
-      // @todo Settings... is there an easier way?
       $element['#attached']['library'][] = array('colorbox', 'colorbox');
       $element['#attached']['js'][] = $path . '/js/gallery-tiler.js';
       $use_colorbox = TRUE;
@@ -219,8 +217,10 @@ function gallery_tiler_preprocess_field(&$variables) {
     $formatter_info = field_formatter_settings_get_instance_display_settings($entity_type, $field_name, $bundle, $view_mode);
     $variables['classes'][] = 'gallery-tiler';
     $variables['classes'][] = 'gallery-tiler-' . $formatter_info['type'];
-    // Set CSS variables. @todo make this easer to read.
-    $variables['content_attributes']['style'] = '--height: ' . $formatter_info['tile_height'] . 'px; --gap: ' . $formatter_info['gutter'] . 'px;';
+    // Set CSS variables.
+    $height = $formatter_info['tile_height'];
+    $gap = $formatter_info['gutter'];
+    $variables['content_attributes']['style'] = "--height: {$height}px; --gap: {$gap}px;";
   }
 }
 
