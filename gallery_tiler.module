@@ -101,6 +101,9 @@ function _gallery_tiler_type_options() {
     'pitted' => t('Pitted'),
     'mountain' => t('Mountain'),
     'french' => t('French'),
+    'squares' => t('Squares'),
+    'circles' => t('Circles'),
+    'octagon' => t('Octagon'),
   );
 }
 
