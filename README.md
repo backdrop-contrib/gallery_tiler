@@ -1,6 +1,15 @@
 # Gallery Tiler
 
-Fancy image gallery styles for fields. Work in progress.
+Fancy gallery styles for image fields.
+
+Ships with a field formatter to turn any multi-value image field into an eye
+ catcher.
+
+- Lightweight
+- Done with pure CSS
+- Ships with 4 different gallery styles
+- Has Colorbox module support
+- Easy to configure
 
 ## Installation
 
