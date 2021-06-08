@@ -63,7 +63,7 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     '#type' => 'number',
     '#title' => t('Base tile height'),
     '#min' => 90,
-    '#max' => 300,
+    '#max' => 450,
     '#default_value' => $settings['tile_height'],
     '#field_suffix' => 'px',
   );
