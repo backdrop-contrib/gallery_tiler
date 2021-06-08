@@ -61,7 +61,7 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
   );
   $element['tile_height'] = array(
     '#type' => 'number',
-    '#title' => t('Tile height'),// @todo wording.
+    '#title' => t('Base tile height'),
     '#min' => 90,
     '#max' => 300,
     '#default_value' => $settings['tile_height'],
@@ -123,6 +123,10 @@ function gallery_tiler_field_formatter_settings_summary($field, $instance, $view
 
       case 'breakpoint':
         $variables['items'][] = t('Breakpoint') . ': ' . $value . 'px';
+        break;
+
+      case 'tile_height':
+        $variables['items'][] = t('Base tile height') . ': ' . $value . 'px';
         break;
 
       case 'gutter':
