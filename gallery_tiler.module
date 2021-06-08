@@ -17,7 +17,7 @@ function gallery_tiler_field_formatter_info() {
       'settings' => array(
         'type' => 'compact',
         'image_style' => NULL,
-        'breakpoint' => 960,
+        'breakpoint' => 800,
         'tile_height' => 220,
         'gutter' => 0,
         'colorbox' => FALSE,
@@ -58,6 +58,7 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     '#max' => 1500,
     '#default_value' => $settings['breakpoint'],
     '#field_suffix' => 'px',
+    '#description' => t('If the browser window is smaller than that, the images show in two (boring) rows.'),
   );
   $element['tile_height'] = array(
     '#type' => 'number',
@@ -66,6 +67,7 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     '#max' => 450,
     '#default_value' => $settings['tile_height'],
     '#field_suffix' => 'px',
+    '#description' => t('Can have big impact on the gallery display, some experiments might be necessary.'),
   );
   $element['gutter'] = array(
     '#type' => 'number',
