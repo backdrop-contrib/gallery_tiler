@@ -1,14 +1,16 @@
 /**
  * CSS for bigger screens, see breakpoint.
  */
+.gallery-tiler .field-items {
+  /* Use our CSS variable. */
+  grid-auto-rows: var(--height, 140px);
+}
 
 /**
  * Type "Compact".
  */
 .gallery-tiler-compact .field-items {
   grid-template-columns: repeat(5, 1fr);
-  /* Use our CSS variables */
-  grid-auto-rows: var(--height, 100px);
 }
 .gallery-tiler-compact .tile-1 {
   grid-column: 1 / 3;
@@ -39,12 +41,10 @@
 }
 
 /**
- * Pitted.
+ * Type "Pitted".
  */
 .gallery-tiler-pitted .field-items {
   grid-template-columns: repeat(6, 1fr);
-  /* Use our CSS variables */
-  grid-auto-rows: var(--height, 100px);
 }
 .gallery-tiler-pitted .tile-1 {
   grid-column: 1 / 4;
@@ -76,12 +76,10 @@
 }
 
 /**
- * Mountain.
+ * Type "Mountain".
  */
 .gallery-tiler-mountain .field-items {
   grid-template-columns: repeat(8, 1fr);
-  /* Use our CSS variables */
-  grid-auto-rows: var(--height, 100px);
 }
 .gallery-tiler-mountain .tile-1 {
   grid-column: 1 / 3;
@@ -135,12 +133,10 @@
 }
 
 /**
- * French.
+ * Type "French".
  */
 .gallery-tiler-french .field-items {
   grid-template-columns: repeat(6, 1fr);
-  /* Use our CSS variables */
-  grid-auto-rows: var(--height, 100px);
 }
 .gallery-tiler-french .tile-1 {
   grid-column: 1;
