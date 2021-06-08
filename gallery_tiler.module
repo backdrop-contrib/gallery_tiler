@@ -186,7 +186,7 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
         }
         $uri = array(
           'path' => $file_url,
-          'options' => array('attributes' => array('rel' => 'gallery')),
+          'options' => array('attributes' => array('rel' => 'tiled-gallery')),
         );
       }
       $element[$delta] = array(
