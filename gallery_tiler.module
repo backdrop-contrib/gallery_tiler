@@ -93,7 +93,7 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
 }
 
 /**
- * Helper function.
+ * Helper function to return an option list.
  */
 function _gallery_tiler_type_options() {
   return array(
@@ -109,10 +109,39 @@ function _gallery_tiler_type_options() {
  */
 function gallery_tiler_field_formatter_settings_summary($field, $instance, $view_mode) {
   $settings = $instance['display'][$view_mode]['settings'];
+  $types = _gallery_tiler_type_options();
   $variables = array('type' => 'ul');
   foreach ($settings as $key => $value) {
-    // @todo Human friendlier display.
-    $variables['items'][] = $key . ': ' . $value;
+    switch ($key) {
+      case 'type':
+        $variables['items'][] = t('Type') . ': <strong>' . $types[$value] . '</strong>';
+        break;
+
+      case 'image_style':
+        $variables['items'][] = t('Image style') . ': ' . $value;
+        break;
+
+      case 'breakpoint':
+        $variables['items'][] = t('Breakpoint') . ': ' . $value . 'px';
+        break;
+
+      case 'gutter':
+        $variables['items'][] = t('Gutter') . ': ' . $value . 'px';
+        break;
+
+      case 'colorbox':
+        if ($value) {
+          $variables['items'][] = t('Use colorbox: yes');
+        }
+        break;
+
+      case 'colorbox_image_style':
+        if ($settings['colorbox']) {
+          $variables['items'][] = t('Colorbox image style') . ': ' . $value;
+        }
+        break;
+
+    }
   }
   return theme('item_list', $variables);
 }
