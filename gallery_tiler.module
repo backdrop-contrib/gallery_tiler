@@ -106,6 +106,7 @@ function _gallery_tiler_type_options() {
     'squares' => t('Squares'),
     'circles' => t('Circles'),
     'octagon' => t('Octagon'),
+    'hexagon' => t('Hexagon'),
   );
 }
 
