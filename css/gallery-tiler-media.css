@@ -236,7 +236,7 @@
  */
 .gallery-tiler-hexagon .field-items {
   grid-template-columns: repeat(4, 1fr);
-  padding-bottom: calc(var(--height) / 2);
+  padding-bottom: var(--height);
 }
 .gallery-tiler-hexagon .field-item {
   clip-path: polygon(25% 0, 0 50%, 25% 100%, 75% 100%, 100% 50%, 75% 0%);
