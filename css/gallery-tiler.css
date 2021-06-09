@@ -21,3 +21,23 @@
   grid-auto-rows: var(--fallback-height, 100px);
   gap: var(--gap, 0);
 }
+/* Fallback to flex for some older browsers. */
+@supports not (display: grid) {
+  .gallery-tiler .field-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .gallery-tiler .field-item {
+    width: 49%;
+    margin-bottom: 2%;
+    height: 180px;
+  }
+  @media (min-width: 769px) {
+    .gallery-tiler .field-item {
+      width: 32%;
+      margin-bottom: 2%;
+      height: 280px;
+    }
+  }
+}
