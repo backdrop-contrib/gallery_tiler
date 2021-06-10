@@ -17,8 +17,7 @@
 .gallery-tiler .field-items {
   grid-template-columns: repeat(2, 1fr);
   /* Use our CSS variable. */
-  --fallback-height: calc(var(--height) * 1.5);
-  grid-auto-rows: var(--fallback-height, 100px);
+  grid-auto-rows: var(--height, 180px);
   gap: var(--gap, 0);
 }
 /* Fallback to flex for some older browsers. */
@@ -37,7 +36,7 @@
     .gallery-tiler .field-item {
       width: 32%;
       margin-bottom: 2%;
-      height: 280px;
+      height: 260px;
     }
   }
 }
