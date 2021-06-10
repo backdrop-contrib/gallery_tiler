@@ -7,7 +7,7 @@ Ships with a field formatter to turn any multi-value image field into an eye
 
 - Lightweight
 - Done with pure CSS, works in all modern browsers
-- Ships with 7 different gallery styles
+- Ships with 8 different gallery styles
 - Has [Colorbox](https://backdropcms.org/project/colorbox) module support
 - Easy to configure
 
