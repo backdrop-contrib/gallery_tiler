@@ -216,6 +216,10 @@
   grid-column: 2 / 4;
   grid-row: 3 / 5;
 }
+.gallery-tiler-circles .tile-1,
+.gallery-tiler-circles .tile-7 {
+  transform: scale(1.08);
+}
 
 /**
  * Type "Octagon".
@@ -239,7 +243,9 @@
  */
 .gallery-tiler-hexagon .field-items {
   grid-template-columns: repeat(4, 1fr);
-  padding-bottom: var(--height);
+  padding-bottom: calc(var(--height) / 1.5);
+  padding-left: calc(2% + var(--gap));
+  padding-right: calc(2% + var(--gap));
 }
 .gallery-tiler-hexagon .field-item {
   -webkit-clip-path: polygon(25% 0, 0 50%, 25% 100%, 75% 100%, 100% 50%, 75% 0%);
