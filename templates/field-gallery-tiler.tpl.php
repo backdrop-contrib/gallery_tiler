@@ -54,7 +54,7 @@
   <?php if (!$label_hidden): ?>
     <div class="field-label"><?php print $label ?>:&nbsp;</div>
   <?php endif; ?>
-  <div class="field-items"<?php print backdrop_attributes($content_attributes); ?>>
+  <div <?php print backdrop_attributes($content_attributes); ?>>
     <?php foreach ($items as $delta => $item): ?>
       <div class="field-item <?php print 'tile-' . ($delta + 1); ?>"<?php print backdrop_attributes($item_attributes[$delta]); ?>><?php print render($item); ?></div>
     <?php endforeach; ?>
