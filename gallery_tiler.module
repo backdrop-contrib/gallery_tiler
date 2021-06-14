@@ -262,7 +262,7 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
               $element['#attached']['js'][] = array(
                 'type' => 'setting',
                 'data' => array(
-                  'photoswipe' > array(
+                  'photoswipe' => array(
                     'options' => $settings,
                   )
                 )
