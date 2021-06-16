@@ -9,6 +9,7 @@ Ships with a field formatter to turn any multi-value image field into an eye
 - Done with pure CSS, works in all modern browsers
 - Ships with 8 different gallery styles
 - Has [Colorbox](https://backdropcms.org/project/colorbox) module support
+- Has [Photoswipe](https://backdropcms.org/project/photoswipe) module support
 - Easy to configure
 
 ## Installation
