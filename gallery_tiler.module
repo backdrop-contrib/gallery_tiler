@@ -20,7 +20,7 @@ function gallery_tiler_field_formatter_info() {
         'breakpoint' => 800,
         'tile_height' => 220,
         'gutter' => 0,
-        'colorbox' => FALSE,
+        'colorbox' => 'none',
         'colorbox_image_style' => NULL,
       ),
     ),
@@ -77,16 +77,39 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     '#default_value' => $settings['gutter'],
     '#field_suffix' => 'px',
   );
+
+  // @todo Change name of form elements? It's a bit confusing since photoswipe
+  // support came in.
+  $lightbox_options = _gallery_tiler_lightbox_options();
+  $current_setting = $settings['colorbox'];
+
+  // This form item was a checkbox up to v1.x-1.0.1, so the setting was bool.
+  if (!array_key_exists($current_setting, $lightbox_options)) {
+    if ($current_setting == TRUE) {
+      $current_setting = 'colorbox';
+    }
+    else {
+      // Can also happen if the previously selected module is now turned off.
+      $current_setting = 'none';
+    }
+  }
+  if (count($lightbox_options) == 1) {
+    $description = t('Neither Colorbox nor Photoswipe is installed.');
+  }
+  else {
+    $description = t('Clicking on an image will open the image in an overlay using the image style below.');
+  }
   $element['colorbox'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Use colorbox'),
-    '#default_value' => module_exists('colorbox') ? $settings['colorbox'] : FALSE,
-    '#disabled' => !module_exists('colorbox'),
+    '#type' => 'select',
+    '#title' => t('Lightbox module'),
+    '#default_value' => $current_setting,
+    '#options' => $lightbox_options,
+    '#description' => $description,
   );
   $element['colorbox_image_style'] = array(
     '#type' => 'select',
-    '#title' => t('Colorbox image style'),
-    '#default_value' => module_exists('colorbox') ? $settings['colorbox_image_style'] : NULL,
+    '#title' => t('Lightbox image style'),
+    '#default_value' => count($lightbox_options) > 1 ? $settings['colorbox_image_style'] : NULL,
     '#empty_option' => t('None (original image)'),
     '#options' => $image_styles,
   );
@@ -108,6 +131,20 @@ function _gallery_tiler_type_options() {
     'octagon' => t('Octagon'),
     'hexagon' => t('Hexagon'),
   );
+}
+
+/**
+ * Helper function to return a list of available lightbox options.
+ */
+function _gallery_tiler_lightbox_options() {
+  $options = array('none' => t('None (no lightbox)'));
+  if (module_exists('colorbox')) {
+    $options['colorbox'] = t('Use Colorbox');
+  }
+  if (module_exists('photoswipe')) {
+    $options['photoswipe'] = t('Use Photoswipe');
+  }
+  return $options;
 }
 
 /**
@@ -141,13 +178,13 @@ function gallery_tiler_field_formatter_settings_summary($field, $instance, $view
 
       case 'colorbox':
         if ($value) {
-          $variables['items'][] = t('Use colorbox: yes');
+          $variables['items'][] = t('Lightbox module') . ': ' . $value;
         }
         break;
 
       case 'colorbox_image_style':
         if ($settings['colorbox']) {
-          $variables['items'][] = t('Colorbox image style') . ': ' . $value;
+          $variables['items'][] = t('Lightbox image style') . ': ' . $value;
         }
         break;
 
@@ -171,30 +208,105 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
       ),
     );
 
+    $lightbox_setting = $display['settings']['colorbox'];
     $use_colorbox = FALSE;
+    $use_photoswipe = FALSE;
     $cbox_image_style = FALSE;
-    if (module_exists('colorbox') && $display['settings']['colorbox']) {
-      $element['#attached']['library'][] = array('colorbox', 'colorbox');
-      $element['#attached']['js'][] = $path . '/js/gallery-tiler.js';
-      $use_colorbox = TRUE;
+
+    if (!empty($lightbox_setting) && $lightbox_setting != 'none') {
       if (isset($display['settings']['colorbox_image_style'])) {
         $cbox_image_style = $display['settings']['colorbox_image_style'];
+      }
+      // The field settings form item used to be a checkbox, so the value still
+      // could be bolean.
+      if ($lightbox_setting === TRUE) {
+        $lightbox_setting = 'colorbox';
+      }
+
+      switch ($lightbox_setting) {
+        case 'colorbox':
+          if (module_exists('colorbox')) {
+            $element['#attached']['library'][] = array('colorbox', 'colorbox');
+            $element['#attached']['js'][] = $path . '/js/gallery-tiler.js';
+            $element['#attached']['js'][] = array(
+              'type' => 'setting',
+              'data' => array(
+                'gallery_tiler' => array('lightboxType' => 'colorbox'),
+              ),
+            );
+            $use_colorbox = TRUE;
+          }
+          break;
+
+        case 'photoswipe':
+          if (module_exists('photoswipe')) {
+            $config = config('photoswipe.settings');
+            $always_loaded = $config->get('photoswipe_always_load_non_admin');
+
+            if (!$always_loaded) {
+              // Module photoswipe did no hook_library_info, so we load the files
+              // individually. But only if it's not always loaded anyway.
+              $ps_path = backdrop_get_path('module', 'photoswipe');
+              $element['#attached']['css'][] = $ps_path . '/library/photoswipe.css';
+              $element['#attached']['css'][] = $ps_path . '/library/default-skin/default-skin.css';
+              $element['#attached']['js'][] = $ps_path . '/library/photoswipe.min.js';
+              $element['#attached']['js'][] = $ps_path . '/library/photoswipe-ui-default.min.js';
+              // This file needs to go to the footer.
+              $element['#attached']['js'][] = array(
+                'type' => 'file',
+                'data' => $ps_path . '/js/photoswipe.jquery.js',
+                'scope' => 'footer',
+              );
+
+              $settings = $config->get('photoswipe_settings');
+              $element['#attached']['js'][] = array(
+                'type' => 'setting',
+                'data' => array(
+                  'photoswipe' => array(
+                    'options' => $settings,
+                  )
+                )
+              );
+              photoswipe_assets_loaded(TRUE);
+            }
+            $use_photoswipe = TRUE;
+          }
+          break;
+
       }
     }
 
     foreach ($items as $delta => $item) {
-      if ($use_colorbox) {
+      if ($use_colorbox || $use_photoswipe) {
         if ($cbox_image_style) {
           $file_url = image_style_url($cbox_image_style, $item['uri']);
+          // Meh, getting the dimensions requires us to do that extra run.
+          $dimensions = array(
+            'width' => $item['width'],
+            'height' => $item['height'],
+          );
+          image_style_transform_dimensions($cbox_image_style, $dimensions);
+          $size = $dimensions['width'] . 'x' . $dimensions['height'];
         }
         else {
           $file_url = file_create_url($item['uri']);
+          $size = $item['width'] . 'x' . $item['height'];
         }
         $uri = array(
           'path' => $file_url,
-          'options' => array('attributes' => array('rel' => 'tiled-gallery')),
+          'options' => array(),
         );
+        if ($use_colorbox) {
+          $uri['options']['attributes'] = array('rel' => 'tiled-gallery');
+        }
+        elseif ($use_photoswipe) {
+          $uri['options']['attributes'] = array(
+            'class' => 'photoswipe',
+            'data-size' => $size,
+          );
+        }
       }
+
       $element[$delta] = array(
         '#theme' => 'image_formatter',
         '#item' => $item,
@@ -210,6 +322,9 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
  * Implements hook_preprocess_field().
  */
 function gallery_tiler_preprocess_field(&$variables) {
+  if (!isset($variables['element']['#formatter'])) {
+    return;
+  }
   if ($variables['element']['#formatter'] == 'tiled_gallery') {
     // Custom template file.
     $variables['theme_hook_suggestions'] = array('gallery_tiler_field');
@@ -223,6 +338,10 @@ function gallery_tiler_preprocess_field(&$variables) {
     $formatter_info = field_formatter_settings_get_instance_display_settings($entity_type, $field_name, $bundle, $view_mode);
     $variables['classes'][] = 'gallery-tiler';
     $variables['classes'][] = 'gallery-tiler-' . $formatter_info['type'];
+    $variables['content_attributes']['class'] = 'field-items';
+    if (!empty($formatter_info['colorbox']) && $formatter_info['colorbox'] == 'photoswipe') {
+      $variables['content_attributes']['class'] .= ' photoswipe-gallery';
+    }
     // Set CSS variables.
     $height = $formatter_info['tile_height'];
     $gap = $formatter_info['gutter'];
