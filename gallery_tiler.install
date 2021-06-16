@@ -19,6 +19,10 @@ function gallery_tiler_update_1000() {
             $config->set("display.{$name}.settings.colorbox", 'colorbox');
             $config->save();
           }
+          elseif ($values['settings']['colorbox'] == FALSE) {
+            $config->set("display.{$name}.settings.colorbox", 'none');
+            $config->save();
+          }
         }
       }
     }
