@@ -17,6 +17,9 @@ Ships with a field formatter to turn any multi-value image field into an eye
 - Install this module using the official 
   [Backdrop CMS instructions](https://backdropcms.org/guide/modules)
 
+Set the display of your content type to "Tiled gallery" and configure the
+ details. For example on: admin/structure/types/manage/YOUR_TYPE/display/default.
+
 ## Issues
 
 Bugs and Feature requests should be reported in the 
