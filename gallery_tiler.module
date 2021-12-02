@@ -356,7 +356,7 @@ function gallery_tiler_theme($existing, $type, $theme, $path) {
   $theme = array();
   $theme['gallery_tiler_field'] = array(
     'template' => 'field-gallery-tiler',
-    'path' => drupal_get_path('module', 'gallery_tiler') . '/templates',
+    'path' => backdrop_get_path('module', 'gallery_tiler') . '/templates',
   );
   return $theme;
 }
