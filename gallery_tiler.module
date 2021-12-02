@@ -336,6 +336,12 @@ function gallery_tiler_preprocess_field(&$variables) {
     $view_mode = !empty($element['#view_mode']) ? $element['#view_mode'] : '';
 
     $formatter_info = field_formatter_settings_get_instance_display_settings($entity_type, $field_name, $bundle, $view_mode);
+    if (empty($formatter_info)) {
+      // Fall back to default settings, if we have no settings data. Happens if
+      // the field is set to hidden, but a field block display is attempted.
+      // No real solution, but catches notices.
+      $formatter_info = field_info_formatter_settings('tiled_gallery');
+    }
     $variables['classes'][] = 'gallery-tiler';
     $variables['classes'][] = 'gallery-tiler-' . $formatter_info['type'];
     $variables['content_attributes']['class'] = 'field-items';
