@@ -12,6 +12,8 @@ Ships with a field formatter to turn any multi-value image field into an eye
 - Has [Photoswipe](https://backdropcms.org/project/photoswipe) module support
 - Easy to configure
 
+![Hexagon style](https://raw.githubusercontent.com/backdrop-contrib/gallery_tiler/1.x-1.x/screenshots/hexagon-tiles.webp)
+
 ## Installation
 
 - Install this module using the official 
