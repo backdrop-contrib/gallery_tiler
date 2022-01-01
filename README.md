@@ -22,6 +22,17 @@ Ships with a field formatter to turn any multi-value image field into an eye
 Set the display of your image field to "Tiled gallery" and configure the
  details. For example on: admin/structure/types/manage/YOUR_TYPE/display/default.
 
+Available styles:
+
+- Compact
+- Pitted
+- Mountain
+- French
+- Squares
+- Circles
+- Octagon
+- Hexagon
+
 ## Issues
 
 Bugs and Feature requests should be reported in the 
