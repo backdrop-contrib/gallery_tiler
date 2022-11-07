@@ -127,7 +127,7 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     }
     $default = 'none';
     if (isset($settings['overlay_caption_source'])) {
-      if (in_array($settings['overlay_caption_source'], $caption_options)) {
+      if (array_key_exists($settings['overlay_caption_source'], $caption_options)) {
         $default = $settings['overlay_caption_source'];
       }
     }
