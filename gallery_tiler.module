@@ -22,6 +22,7 @@ function gallery_tiler_field_formatter_info() {
         'gutter' => 0,
         'colorbox' => 'none',
         'colorbox_image_style' => NULL,
+        'overlay_caption_source' => 'none',
       ),
     ),
   );
@@ -114,6 +115,31 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     '#options' => $image_styles,
   );
 
+  $has_alt = $instance['settings']['alt_field'];
+  $has_title = $instance['settings']['title_field'];
+  if ($has_alt || $has_title) {
+    $caption_options = array('none' => t('No caption'));
+    if ($has_alt) {
+      $caption_options['alt'] = t('Image alt attribute');
+    }
+    if ($has_title) {
+      $caption_options['title'] = t('Image title attribute');
+    }
+    $default = 'none';
+    if (isset($settings['overlay_caption_source'])) {
+      if (in_array($settings['overlay_caption_source'], $caption_options)) {
+        $default = $settings['overlay_caption_source'];
+      }
+    }
+    $element['overlay_caption_source'] = array(
+      '#type' => 'radios',
+      '#title' => t('Image caption source'),
+      '#default_value' => $default,
+      '#options' => $caption_options,
+      '#description' => t('The source for overlay image captions, if available. Can be the image "alt" or "title" attribute.'),
+    );
+  }
+
   return $element;
 }
 
@@ -188,6 +214,12 @@ function gallery_tiler_field_formatter_settings_summary($field, $instance, $view
         }
         break;
 
+      case 'overlay_caption_source':
+        if ($settings['colorbox']) {
+          $variables['items'][] = t('Image caption source') . ': ' . $value;
+        }
+        break;
+
     }
   }
   return theme('item_list', $variables);
@@ -212,11 +244,18 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
     $use_colorbox = FALSE;
     $use_photoswipe = FALSE;
     $cbox_image_style = FALSE;
+    $overlay_caption_source = FALSE;
 
     if (!empty($lightbox_setting) && $lightbox_setting != 'none') {
       if (isset($display['settings']['colorbox_image_style'])) {
         $cbox_image_style = $display['settings']['colorbox_image_style'];
       }
+      if (isset($display['settings']['overlay_caption_source'])) {
+        if ($display['settings']['overlay_caption_source'] != 'none') {
+          $overlay_caption_source = $display['settings']['overlay_caption_source'];
+        }
+      }
+
       // The field settings form item used to be a checkbox, so the value still
       // could be bolean.
       if ($lightbox_setting === TRUE) {
@@ -298,12 +337,18 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
         );
         if ($use_colorbox) {
           $uri['options']['attributes'] = array('rel' => 'tiled-gallery');
+          if ($overlay_caption_source && isset($item[$overlay_caption_source])) {
+            $uri['options']['attributes']['title'] = $item[$overlay_caption_source];
+          }
         }
         elseif ($use_photoswipe) {
           $uri['options']['attributes'] = array(
             'class' => 'photoswipe',
             'data-size' => $size,
           );
+          if ($overlay_caption_source && isset($item[$overlay_caption_source])) {
+            $uri['options']['attributes']['data-overlay-title'] = $item[$overlay_caption_source];
+          }
         }
       }
 
