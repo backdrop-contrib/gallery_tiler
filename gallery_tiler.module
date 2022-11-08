@@ -107,38 +107,50 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     '#options' => $lightbox_options,
     '#description' => $description,
   );
+
+  $jq_selector = ':input[name="fields[' . $instance['field_name'] . '][settings_edit_form][settings][colorbox]"]';
+  if (isset($form_state['form_id']) && $form_state['form_id'] == 'views_ui_config_item_form') {
+    $jq_selector = ':input[name="options[settings][colorbox]"]';
+  }
   $element['colorbox_image_style'] = array(
     '#type' => 'select',
     '#title' => t('Lightbox image style'),
     '#default_value' => count($lightbox_options) > 1 ? $settings['colorbox_image_style'] : NULL,
     '#empty_option' => t('None (original image)'),
     '#options' => $image_styles,
+    '#states' => array(
+      'invisible' => array(
+        $jq_selector => array('value' => 'none'),
+      ),
+    ),
   );
 
-  $has_alt = $instance['settings']['alt_field'];
-  $has_title = $instance['settings']['title_field'];
-  if ($has_alt || $has_title) {
-    $caption_options = array('none' => t('No caption'));
-    if ($has_alt) {
-      $caption_options['alt'] = t('Image alt attribute');
-    }
-    if ($has_title) {
-      $caption_options['title'] = t('Image title attribute');
-    }
-    $default = 'none';
-    if (isset($settings['overlay_caption_source'])) {
-      if (array_key_exists($settings['overlay_caption_source'], $caption_options)) {
-        $default = $settings['overlay_caption_source'];
-      }
-    }
-    $element['overlay_caption_source'] = array(
-      '#type' => 'radios',
-      '#title' => t('Image caption source'),
-      '#default_value' => $default,
-      '#options' => $caption_options,
-      '#description' => t('The source for overlay image captions, if available. Can be the image "alt" or "title" attribute.'),
-    );
+  $caption_options = array('none' => t('No caption'));
+  // These field settings are available in views_ui, but always "0".
+  if ($instance['settings']['alt_field']) {
+    $caption_options['alt'] = t('Image alt attribute');
   }
+  if ($instance['settings']['title_field']) {
+    $caption_options['title'] = t('Image title attribute');
+  }
+  $default = 'none';
+  if (isset($settings['overlay_caption_source'])) {
+    if (array_key_exists($settings['overlay_caption_source'], $caption_options)) {
+      $default = $settings['overlay_caption_source'];
+    }
+  }
+  $element['overlay_caption_source'] = array(
+    '#type' => 'radios',
+    '#title' => t('Lightbox image caption'),
+    '#default_value' => $default,
+    '#options' => $caption_options,
+    '#description' => t('The source for overlay image captions, if available. Can be the image "alt" or "title" attribute.'),
+    '#states' => array(
+      'invisible' => array(
+        $jq_selector => array('value' => 'none'),
+      ),
+    ),
+  );
 
   return $element;
 }
@@ -209,14 +221,14 @@ function gallery_tiler_field_formatter_settings_summary($field, $instance, $view
         break;
 
       case 'colorbox_image_style':
-        if ($settings['colorbox']) {
+        if ($settings['colorbox'] && $settings['colorbox'] != 'none') {
           $variables['items'][] = t('Lightbox image style') . ': ' . $value;
         }
         break;
 
       case 'overlay_caption_source':
-        if ($settings['colorbox']) {
-          $variables['items'][] = t('Image caption source') . ': ' . $value;
+        if ($settings['colorbox'] && $settings['colorbox'] != 'none') {
+          $variables['items'][] = t('Lightbox image caption') . ': ' . $value;
         }
         break;
 
