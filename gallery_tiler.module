@@ -22,6 +22,7 @@ function gallery_tiler_field_formatter_info() {
         'gutter' => 0,
         'colorbox' => 'none',
         'colorbox_image_style' => NULL,
+        'overlay_caption_source' => 'none',
       ),
     ),
   );
@@ -35,6 +36,15 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
   $element = array();
+
+  // Suppress the form items in views_ui.
+  if ($instance['entity_type'] == 'views') {
+    $element['warn'] = array(
+      '#type' => 'help',
+      '#markup' => t('This field formatter only works if "Use field template" is selected in the style settings below, and has no other settings in views.'),
+    );
+    return $element;
+  }
 
   $element['type'] = array(
     '#type' => 'select',
@@ -106,12 +116,45 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
     '#options' => $lightbox_options,
     '#description' => $description,
   );
+
+  $jq_selector = ':input[name="fields[' . $instance['field_name'] . '][settings_edit_form][settings][colorbox]"]';
   $element['colorbox_image_style'] = array(
     '#type' => 'select',
     '#title' => t('Lightbox image style'),
     '#default_value' => count($lightbox_options) > 1 ? $settings['colorbox_image_style'] : NULL,
     '#empty_option' => t('None (original image)'),
     '#options' => $image_styles,
+    '#states' => array(
+      'invisible' => array(
+        $jq_selector => array('value' => 'none'),
+      ),
+    ),
+  );
+
+  $caption_options = array('none' => t('No caption'));
+  if ($instance['settings']['alt_field']) {
+    $caption_options['alt'] = t('Image alt attribute');
+  }
+  if ($instance['settings']['title_field']) {
+    $caption_options['title'] = t('Image title attribute');
+  }
+  $default = 'none';
+  if (isset($settings['overlay_caption_source'])) {
+    if (array_key_exists($settings['overlay_caption_source'], $caption_options)) {
+      $default = $settings['overlay_caption_source'];
+    }
+  }
+  $element['overlay_caption_source'] = array(
+    '#type' => 'radios',
+    '#title' => t('Lightbox image caption'),
+    '#default_value' => $default,
+    '#options' => $caption_options,
+    '#description' => t('The source for overlay image captions, if available. Can be the image "alt" or "title" attribute.'),
+    '#states' => array(
+      'invisible' => array(
+        $jq_selector => array('value' => 'none'),
+      ),
+    ),
   );
 
   return $element;
@@ -183,8 +226,14 @@ function gallery_tiler_field_formatter_settings_summary($field, $instance, $view
         break;
 
       case 'colorbox_image_style':
-        if ($settings['colorbox']) {
+        if ($settings['colorbox'] && $settings['colorbox'] != 'none') {
           $variables['items'][] = t('Lightbox image style') . ': ' . $value;
+        }
+        break;
+
+      case 'overlay_caption_source':
+        if ($settings['colorbox'] && $settings['colorbox'] != 'none') {
+          $variables['items'][] = t('Lightbox image caption') . ': ' . $value;
         }
         break;
 
@@ -212,11 +261,18 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
     $use_colorbox = FALSE;
     $use_photoswipe = FALSE;
     $cbox_image_style = FALSE;
+    $overlay_caption_source = FALSE;
 
     if (!empty($lightbox_setting) && $lightbox_setting != 'none') {
       if (isset($display['settings']['colorbox_image_style'])) {
         $cbox_image_style = $display['settings']['colorbox_image_style'];
       }
+      if (isset($display['settings']['overlay_caption_source'])) {
+        if ($display['settings']['overlay_caption_source'] != 'none') {
+          $overlay_caption_source = $display['settings']['overlay_caption_source'];
+        }
+      }
+
       // The field settings form item used to be a checkbox, so the value still
       // could be bolean.
       if ($lightbox_setting === TRUE) {
@@ -298,12 +354,18 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
         );
         if ($use_colorbox) {
           $uri['options']['attributes'] = array('rel' => 'tiled-gallery');
+          if ($overlay_caption_source && isset($item[$overlay_caption_source])) {
+            $uri['options']['attributes']['title'] = $item[$overlay_caption_source];
+          }
         }
         elseif ($use_photoswipe) {
           $uri['options']['attributes'] = array(
             'class' => 'photoswipe',
             'data-size' => $size,
           );
+          if ($overlay_caption_source && isset($item[$overlay_caption_source])) {
+            $uri['options']['attributes']['data-overlay-title'] = $item[$overlay_caption_source];
+          }
         }
       }
 
