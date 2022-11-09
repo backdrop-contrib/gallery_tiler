@@ -37,6 +37,15 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
   $settings = $display['settings'];
   $element = array();
 
+  // Suppress the form items in views_ui.
+  if ($instance['entity_type'] == 'views') {
+    $element['warn'] = array(
+      '#type' => 'help',
+      '#markup' => t('This field formatter only works if "Use field template" is selected in the style settings below, and has no other settings in views.'),
+    );
+    return $element;
+  }
+
   $element['type'] = array(
     '#type' => 'select',
     '#title' => t('Gallery type'),
@@ -109,9 +118,6 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
   );
 
   $jq_selector = ':input[name="fields[' . $instance['field_name'] . '][settings_edit_form][settings][colorbox]"]';
-  if (isset($form_state['form_id']) && $form_state['form_id'] == 'views_ui_config_item_form') {
-    $jq_selector = ':input[name="options[settings][colorbox]"]';
-  }
   $element['colorbox_image_style'] = array(
     '#type' => 'select',
     '#title' => t('Lightbox image style'),
@@ -126,7 +132,6 @@ function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mo
   );
 
   $caption_options = array('none' => t('No caption'));
-  // These field settings are available in views_ui, but always "0".
   if ($instance['settings']['alt_field']) {
     $caption_options['alt'] = t('Image alt attribute');
   }
