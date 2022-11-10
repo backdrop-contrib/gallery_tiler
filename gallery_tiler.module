@@ -309,8 +309,8 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
             $always_loaded = $config->get('photoswipe_always_load_non_admin');
 
             if (!$always_loaded) {
-              // Module photoswipe did no hook_library_info, so we load the files
-              // individually. But only if it's not always loaded anyway.
+              // Module photoswipe did no hook_library_info, so we load the
+              // files individually. But only if it's not always loaded anyway.
               $ps_path = backdrop_get_path('module', 'photoswipe');
               $element['#attached']['css'][] = $ps_path . '/library/photoswipe.css';
               $element['#attached']['css'][] = $ps_path . '/library/default-skin/default-skin.css';
@@ -329,8 +329,8 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
                 'data' => array(
                   'photoswipe' => array(
                     'options' => $settings,
-                  )
-                )
+                  ),
+                ),
               );
               photoswipe_assets_loaded(TRUE);
             }
