@@ -408,10 +408,15 @@ function gallery_tiler_preprocess_field(&$variables) {
 
     $formatter_info = field_formatter_settings_get_instance_display_settings($entity_type, $field_name, $bundle, $view_mode);
     if (empty($formatter_info)) {
-      // Fall back to default settings, if we have no settings data. Happens if
-      // the field is set to hidden, but a field block display is attempted.
-      // No real solution, but catches notices.
-      $formatter_info = field_info_formatter_settings('tiled_gallery');
+      // Field blocks.
+      // @see gallery_tiler_block_view_alter().
+      if ($view_mode == '_custom_display' && !empty($element['#formatter_settings'])) {
+        $formatter_info = $element['#formatter_settings'];
+      }
+      else {
+        // Fall back to default settings, if we have no settings data.
+        $formatter_info = field_info_formatter_settings('tiled_gallery');
+      }
     }
     $variables['classes'][] = 'gallery-tiler';
     $variables['classes'][] = 'gallery-tiler-' . $formatter_info['type'];
@@ -423,6 +428,16 @@ function gallery_tiler_preprocess_field(&$variables) {
     $height = $formatter_info['tile_height'];
     $gap = $formatter_info['gutter'];
     $variables['content_attributes']['style'] = "--height: {$height}px; --gap: {$gap}px;";
+  }
+}
+
+/**
+ * Implements hook_block_view_alter().
+ */
+function gallery_tiler_block_view_alter(&$data, $block) {
+  if (is_a($block, 'FieldBlock') && $block->settings['formatter'] == 'tiled_gallery') {
+    // Hand over the field block formatter settings to the field preprocessor.
+    $data['content']['#formatter_settings'] = $block->settings['formatter_settings'];
   }
 }
 
