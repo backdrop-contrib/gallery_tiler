@@ -33,6 +33,11 @@ function gallery_tiler_field_formatter_info() {
  * Implements hook_field_formatter_settings_form().
  */
 function gallery_tiler_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  // Prevent warnings on "Manage file display", which attempts to load this form
+  // but has no field at all.
+  if (empty($field)) {
+    return;
+  }
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
   $element = array();
