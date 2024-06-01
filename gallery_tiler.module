@@ -457,3 +457,14 @@ function gallery_tiler_theme($existing, $type, $theme, $path) {
   );
   return $theme;
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function gallery_tiler_form_file_display_form_alter(&$form, &$form_state) {
+  // This field formatter is not appropriate for (bare) File display.
+  // Not even File type image.
+  // Remove option on admin/structure/file-types/manage/TYPE/file-display
+  // @see https://github.com/backdrop/backdrop-issues/issues/6578
+  unset($form['display']['formatter']['#options']['file_field_tiled_gallery']);
+}
