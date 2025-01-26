@@ -201,6 +201,9 @@ function _gallery_tiler_lightbox_options() {
   if (module_exists('photoswipe')) {
     $options['photoswipe'] = t('Use Photoswipe');
   }
+  if (module_exists('glightbox')) {
+    $options['glightbox'] = t('Use Glightbox');
+  }
   return $options;
 }
 
@@ -274,6 +277,7 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
     $lightbox_setting = $display['settings']['colorbox'];
     $use_colorbox = FALSE;
     $use_photoswipe = FALSE;
+    $use_glightbox = FALSE;
     $cbox_image_style = FALSE;
     $overlay_caption_source = FALSE;
 
@@ -343,11 +347,28 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
           }
           break;
 
+          case 'glightbox':
+            if (module_exists('glightbox')) {
+              $element['#attached']['library'][] = array('glightbox', 'glightbox');
+              $gl_path = backdrop_get_path('module', 'glightbox');
+              $element['#attached']['js'][] = array(
+                'type' => 'file',
+                'data' => $gl_path . '/js/glightbox.js',
+              );
+              // @todo could this override/conflict with other fields's glightbox settings?
+              $element['#attached']['js'][] = array(
+                'type' => 'setting',
+                'data' => array('glightbox' => config_get('glightbox.settings')),
+              );
+              $use_glightbox = TRUE;
+            }
+          break;
+
       }
     }
 
     foreach ($items as $delta => $item) {
-      if ($use_colorbox || $use_photoswipe) {
+      if ($use_colorbox || $use_photoswipe || $use_glightbox) {
         if ($cbox_image_style) {
           $file_url = image_style_url($cbox_image_style, $item['uri']);
           // Meh, getting the dimensions requires us to do that extra run.
@@ -379,6 +400,16 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
           );
           if ($overlay_caption_source && isset($item[$overlay_caption_source])) {
             $uri['options']['attributes']['data-overlay-title'] = $item[$overlay_caption_source];
+          }
+        }
+        elseif ($use_glightbox) {
+          $uri['options']['attributes']['class'] = 'glightbox';
+          $id_parts = array($entity_type, $entity->type, $instance['field_name']);
+          // @todo does this even make sense inside the loop?
+          $uri['options']['attributes']['data-gallery'] = backdrop_clean_css_identifier(implode('-', $id_parts));
+          $caption_source = $display['settings']['overlay_caption_source'];
+          if ($caption_source != 'none') {
+            $uri['options']['attributes']['data-title'] = $item[$caption_source];
           }
         }
       }
