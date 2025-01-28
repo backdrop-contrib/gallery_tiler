@@ -347,20 +347,20 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
           }
           break;
 
-          case 'glightbox':
-            if (module_exists('glightbox')) {
-              $element['#attached']['library'][] = array('glightbox', 'glightbox');
-              $gl_path = backdrop_get_path('module', 'glightbox');
-              $element['#attached']['js'][] = array(
-                'type' => 'file',
-                'data' => $gl_path . '/js/glightbox.js',
-              );
-              $element['#attached']['js'][] = array(
-                'type' => 'setting',
-                'data' => array('glightbox' => config_get('glightbox.settings')),
-              );
-              $use_glightbox = TRUE;
-            }
+        case 'glightbox':
+          if (module_exists('glightbox')) {
+            $element['#attached']['library'][] = array('glightbox', 'glightbox');
+            $gl_path = backdrop_get_path('module', 'glightbox');
+            $element['#attached']['js'][] = array(
+              'type' => 'file',
+              'data' => $gl_path . '/js/glightbox.js',
+            );
+            $element['#attached']['js'][] = array(
+              'type' => 'setting',
+              'data' => array('glightbox' => config_get('glightbox.settings')),
+            );
+            $use_glightbox = TRUE;
+          }
           break;
 
       }
