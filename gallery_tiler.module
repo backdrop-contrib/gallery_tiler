@@ -355,7 +355,6 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
                 'type' => 'file',
                 'data' => $gl_path . '/js/glightbox.js',
               );
-              // @todo could this override/conflict with other fields's glightbox settings?
               $element['#attached']['js'][] = array(
                 'type' => 'setting',
                 'data' => array('glightbox' => config_get('glightbox.settings')),
@@ -404,9 +403,7 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
         }
         elseif ($use_glightbox) {
           $uri['options']['attributes']['class'] = 'glightbox';
-          $id_parts = array($entity_type, $entity->type, $instance['field_name']);
-          // @todo does this even make sense inside the loop?
-          $uri['options']['attributes']['data-gallery'] = backdrop_clean_css_identifier(implode('-', $id_parts));
+          $uri['options']['attributes']['data-gallery'] = 'tiled-gallery';
           $caption_source = $display['settings']['overlay_caption_source'];
           if ($caption_source != 'none') {
             $uri['options']['attributes']['data-title'] = $item[$caption_source];
