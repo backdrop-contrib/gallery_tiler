@@ -280,6 +280,7 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
     $use_glightbox = FALSE;
     $cbox_image_style = FALSE;
     $overlay_caption_source = FALSE;
+    $randomized_selector = 'glightbox-' . backdrop_random_key(8);
 
     if (!empty($lightbox_setting) && $lightbox_setting != 'none') {
       if (isset($display['settings']['colorbox_image_style'])) {
@@ -355,9 +356,11 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
               'type' => 'file',
               'data' => $gl_path . '/js/glightbox.js',
             );
+            $data = config_get('glightbox.settings');
+            $data['selector'] = $randomized_selector;
             $element['#attached']['js'][] = array(
               'type' => 'setting',
-              'data' => array('glightbox' => config_get('glightbox.settings')),
+              'data' => array('glightbox' => $data),
             );
             $use_glightbox = TRUE;
           }
@@ -402,7 +405,7 @@ function gallery_tiler_field_formatter_view($entity_type, $entity, $field, $inst
           }
         }
         elseif ($use_glightbox) {
-          $uri['options']['attributes']['class'] = 'glightbox';
+          $uri['options']['attributes']['class'] = $randomized_selector;
           $uri['options']['attributes']['data-gallery'] = 'tiled-gallery';
           $caption_source = $display['settings']['overlay_caption_source'];
           if ($caption_source != 'none') {
